@@ -1,0 +1,3 @@
+git remote add origin https://github.com/ercruz64/03-ADDSI--2365888.git
+git branch -M main
+git push -u origin main
