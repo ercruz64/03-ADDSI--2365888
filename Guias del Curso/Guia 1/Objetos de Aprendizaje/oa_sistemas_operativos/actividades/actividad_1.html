@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+	<meta charset="utf-8">
+  	<!-- Use the .htaccess and remove these lines to avoid edge case issues.
+       More info: h5bp.com/i/378 -->
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  	<title>AA1OA2 - Sistemas Operativos</title>
+  	<meta name="description" content="Actividad de afianzamiento SENA">
+
+  	<!-- Mobile viewport optimized: h5bp.com/viewport -->
+  	<meta name="viewport" content="width=device-width">	
+
+  	<link rel="stylesheet" href="src/bootstrap.css">
+	
+	<style>	
+		/* 
+		    Document   : style
+		    Created on : Jun 17, 2011, 9:25:44 AM
+		    Author     : Jahvi
+		    Description:
+		        Hoja de estilo para tutorial 10.
+		*/
+
+		body {
+		   /* background: #7db9e8;*/
+		    font-family: Arial, serif
+		}
+
+		footer p { padding: 20px;}
+
+		.clear { clear: both;}
+
+		#wrap { width:960px; margin: 0px auto;}
+
+		#posiciones {
+			float:left;
+			width:40px;
+			margin: 20px 0px;
+		}
+
+		#posiciones li {
+		    list-style: none;
+		    width: 100%;
+		    height: 30px;
+		    line-height: 30px;
+		    background: #FAA732;
+		    margin-bottom: 10px;
+		    padding-left: 10px;
+		    cursor: move;
+		    color: #FFFFFF;
+		    font-weight: bold;
+		    border: 1px solid #FFCC00;
+		}    
+
+		#lista {
+			float: left;
+		    width: 400px;
+		    margin: 20px auto;
+		}
+
+		#lista li {
+		    list-style: none;
+		    width: 300px;
+		    height: 30px;
+		    line-height: 30px;
+		    background: #fff;
+		    margin-bottom: 10px;
+		    padding-left: 10px;
+		    cursor: move;
+		    color: #000000;
+		    font-weight: bold;
+		    border: 1px solid #FAA732
+		}
+
+		#lista li:hover { background-color: #ffffcc;}
+
+		#lista .placeholder {
+		    border: 2px dashed #676767;
+		    background: #E6E6E6;
+		}
+
+		#solucion {
+			float: left;
+		    width: 400px;
+		    margin: 20px auto;
+		    display: none;
+		}
+
+		#solucion li {
+		    list-style: none;
+		    width: 300px;
+		    height: 30px;
+		    line-height: 30px;
+		    background: #fff;
+		    margin-bottom: 10px;		    
+		    cursor: move;
+		    color: #000000;
+		    font-weight: bold;
+		    border: 1px solid #264409;
+		}
+
+		#solucion li span { 
+			background-color: #C6D880;
+			line-height: 30px;
+			margin:0;
+			width:30px;
+			height:30px;
+			padding-left: 10px;
+			display: inline-block;
+			border-right:1px solid #264409;
+			margin-right: 5px;
+			color: #FFFFFF;
+		}
+		
+		table#cabezote { width:100%; margin-top: 20px; /*background-color: #FFF;*/}
+
+		div#msg { float: left; width:520px; /*height:300px;*/ margin: 20px auto; text-align: center;}
+			div#msg .box-msg{ 
+				width:320px; 
+				height:80px; 
+				border:4px solid #000; 
+				border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; margin: 10px 80px;
+				font-family: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+			    font-size: 24px;
+			    font-weight: 200;
+			    line-height: 1;				
+			}
+
+		#reloj {
+			font-family: "HelveticaNeue-Light","Helvetica Neue Light","Helvetica Neue",sans-serif;
+		    font-size: 24px;
+		    font-weight: 200;
+		    line-height: 1;						   		   		    
+		}
+		
+		.instruccion {
+		   font-size: 20px;
+		   color: #264409;
+		}
+
+		.success {
+		    background: none repeat scroll 0 0 #E6EFC2;
+		    border-color: #C6D880 !important;
+		    color: #264409;
+		}
+
+		.error, .alert {
+		    background: none repeat scroll 0 0 #FBE3E4;
+		    border-color: #FBC2C4 !important;
+		    color: #8A1F11;
+		}		
+		.error, .alert, .notice, .success, .info {
+		    border: 2px solid #DDDDDD;
+		    margin-bottom: 1em;
+		    padding: 0.8em;
+		}		
+
+		#posiciones li.incorrecto, #lista li.incorrecto {		
+			border-color: #C00;
+		}	
+
+		#posiciones li.incorrecto {
+			background-color: red;
+		}
+
+		#posiciones li.correcto, #lista li.correcto {		
+			border-color: #264409;
+		}	
+
+		#posiciones li.correcto {
+			background-color: #C6D880;
+		}		
+	</style>
+
+  	<script src="src/jquery.js"></script>
+  	<script src="src/jquery-ui.js"></script>
+
+    <script>
+    	var milista=[];
+    	var tiempo;
+    	var dialogMsg;
+    	tt=30; //tiempo total
+		tm=tt; //tiempo actual
+		
+		function timer(){
+			$('#reloj').html(tm);
+			if(tm<=0) {				
+				$('#verificar').trigger('click');
+				$('#verificar').attr("disabled", true);
+				clearInterval(tiempo);
+			}else {
+				tm--;
+				$('#verificar').attr("disabled", false);
+			}	
+		}		
+
+    	function ocultarMsg() {
+    		$('#respuesta').hide();
+    	}
+
+    	function mostrarSolucion() {
+    		$('#msg').slideUp('slow');
+    		$('#solucion').slideDown('slow');
+
+       		var ok=0; var pos;           		
+       		if(milista.length>0) {
+       			$.each(milista,function(i,v) {           				
+       				pos=v.substring(5);       
+       				if(i==pos) {
+  						$('#pos'+i).addClass('correcto');
+   						$('#'+v).addClass('correcto');           					
+       				}else {
+   						$('#pos'+i).addClass('incorrecto');
+   						$('#'+v).addClass('incorrecto');
+       				}
+       			});
+       		}    		
+			
+       		$('#btnsubmit').removeClass('btn-danger').addClass('btn-warning').html('Reiniciar actividad?');
+       		tm=0;       
+       		$( "#lista" ).sortable({ disabled: true });  		
+       		$('#btnsolucion').hide();	
+    	}
+
+        $(function(){
+
+           ocultarMsg();
+
+           $('#btnsubmit').hide();
+           $('#btnsolucion').hide();
+           
+           tiempo = setInterval("timer()",1000); 
+
+           $('#lista').sortable({
+               placeholder: 'placeholder',
+               update: function(event,ui) {
+               		//alert($(this).sortable('serialize'));
+               		milista=$(this).sortable('toArray');               		
+               		$('#btnsolucion').show();
+               }
+           }); 
+
+           $('#verificar').click(function(){
+           		//milista=$('#milista').sortable('toArray');    
+           		var ok=0; var pos;           		
+           		if(milista.length>0) {
+           			$.each(milista,function(i,v) {           				
+           				pos=v.substring(5);                  		
+           				if(i==pos) {
+           					ok++;
+           					if(tm<=0) {
+           						$('#pos'+i).addClass('correcto');
+           						$('#'+v).addClass('correcto');           					
+           					}	
+           				}else {
+           					if(tm<=0) {
+           						$('#pos'+i).addClass('incorrecto');
+           						$('#'+v).addClass('incorrecto');
+           					}
+           				}
+           			});
+           		}
+           		
+       			if(ok==4) {
+       				$("#respuesta").html('Tu respuesta es correcta! <br> Lo hiciste en <strong>'+(tt-tm)+'</strong> segundos. <br>Felicitaciones!!');
+       				$("#respuesta").removeClass('error').addClass('success');
+       				clearTimeout();
+       				$("#respuesta").show();       				
+       				clearInterval(tiempo);
+       				$('#btnsubmit').removeClass('btn-danger').addClass('btn-success').html('Felicitaciones lo hiciste en '+(tt-tm)+' segundos!! Reiniciar Actividad?');
+       				$('#btnsubmit').show();
+       			}else {          
+       				if(tm>0) {
+       					$("#respuesta").html('Incorrecto! <br> Te quedan <strong>'+tm+'</strong> segundos <br>Intenta nuevamente!');
+       				}else {
+       					$("#respuesta").html('Incorrecto! <br> Lo sentimos, se agoto el tiempo!');
+       					$('#btnsubmit').html('Reiniciar la actividad?');     
+       					$( "#lista" ).sortable({ disabled: true });  	
+       				}
+
+       				$("#respuesta").removeClass('success').addClass('error');
+       				$("#respuesta").show();       				
+       				if(tm<=0) $('#btnsubmit').show();
+       				
+
+       			}
+       			setTimeout("ocultarMsg()",3000);           		
+           })
+
+			$('#btnsubmit').click(function() { $('#test').submit(); })
+			$('#btnsolucion').click(function() { mostrarSolucion(); })
+        });
+    </script>
+
+  	<body>
+  		<section id="wrap">
+  		<form name='test' id='test'></form>
+  		<table id='cabezote' class='table table-striped table-bordered table-condensed'>
+  			<thead><tr><th colspan=2>Actividad de afianzamiento</th></tr></thead>
+  			<tbody>  					  				
+  				<tr><td>Tema</td>
+			  <td>Sistemas Operativos y Sistemas de Archivos</td></tr>
+  			</tbody>
+  		</table>
+        <span class="instruccion">Ordena los elementos de tal forma que presenten el orden correcto de interacción de un sistema operativo.</span><br>
+  		
+  		<p><br>
+  		  - Arrastra con el mouse y ordene los bloques</p>
+
+        <ul id="posiciones">           
+            <li id='pos0'>1</li>
+            <li id='pos1'>2</li>
+            <li id='pos2'>3</li>
+            <li id='pos3'>4</li>
+        </ul>
+        <ul id="lista">                       
+        	<li id="item_2">Sistema Operativo</li>
+            <li id="item_3">Hardware</li>                        
+            <li id="item_0">Usuario</li>
+            <li id="item_1">Aplicación</li>
+        </ul>
+
+
+        <ul id="solucion">                       
+        	<li><span>1</span> Usuario</li>
+        	<li><span>2</span> Aplicación</li>                     
+        	<li><span>3</span> Sistema Operativo</li>
+            <li><span>4</span> Hardware</li>       
+        </ul>
+
+        <div id='msg'>
+        	<div id='respuesta' class='box-msg error'>
+        		
+        	</div>
+        </div>
+
+        <div class='clear'></div>
+        <p>TIEMPO: Quedan <span id='reloj'></span> segundos para responder.</p>
+        <div class='clear'></div>
+        <button class='btn btn-primary btn-large' id='verificar'>Verificar Respuesta</button>
+        <button class='btn btn-danger btn-small' id='btnsubmit'>Reiniciar prueba</button>
+        <button class="btn btn-small" id='btnsolucion'>Ver soluci&oacute;n</button>
+  		</section>
+
+  		<footer><p>Sena &copy 2012</p></footer>
+  	</body>
+
+</html>
